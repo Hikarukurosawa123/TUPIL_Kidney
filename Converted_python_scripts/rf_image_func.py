@@ -100,7 +100,26 @@ def rf_image(patient_id, image_num, root_dir, save_full=False, save_resized=Fals
         print(f"Resized 224x224 image saved to {save_dir}")
 
     # Display
+    # Display
     plt.figure()
-    plt.imshow(overlay_full, cmap="gray", vmin=15, vmax=70, aspect="auto")
+
+    # Compute coordinate values for each pixel
+    depth_axis = np.linspace(0, depth, overlay_full.shape[0])
+    width_axis = np.linspace(0, width, overlay_full.shape[1])
+
+    extent = [width_axis[0], width_axis[-1], depth_axis[-1], depth_axis[0]]
+
+    plt.imshow(
+        overlay_full,
+        cmap="gray",
+        vmin=15,
+        vmax=70,
+        aspect="auto",
+        extent=extent
+    )
+
+    plt.xlabel("Width (mm)")
+    plt.ylabel("Depth (mm)")
     plt.title(f"Full Kidney ROI Overlay: {title_name}")
     plt.show()
+

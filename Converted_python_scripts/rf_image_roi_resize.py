@@ -10,7 +10,7 @@ from .ReadClariusYML_func import ReadClariusYML
 from skimage.transform import resize
 import io
 from PIL import Image
-def rf_image_with_roi_resized_png_cwd(patient_id, image_num, root_dir, out_size=(224, 224), save_bmode = False, save_aspect_auto=True):
+def rf_image_with_roi_resized_png_cwd(patient_id, image_num, root_dir, out_size=(224, 224), save_bmode = False):
     """
     Load RF data, apply ROI mask, generate B-mode, resize, and save
     into ./Bmode folder in the current directory.
@@ -89,27 +89,3 @@ def rf_image_with_roi_resized_png_cwd(patient_id, image_num, root_dir, out_size=
         plt.imsave(out_path, resized_img, cmap="gray", vmin=15, vmax=70)
         print(f"Saved resized Bmode to {out_path}")
 
-    if save_aspect_auto:
-        save_dir = os.path.join(os.getcwd(), "Bmode_auto_aspect")
-        os.makedirs(save_dir, exist_ok=True)
-        out_name_auto = f"Patient_{patient_id}_Resized_Image_{image_num}.png"
-        out_path_auto = os.path.join(save_dir, out_name_auto)
-
-        # Step 1: Render with aspect="auto" to an in-memory buffer
-        fig, ax = plt.subplots()
-        ax.imshow(overlay_full, cmap="gray", vmin=15, vmax=70, aspect="auto")
-        ax.axis("off")
-
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
-        plt.close(fig)
-        buf.seek(0)
-
-        # Step 2: Open screenshot as PIL Image
-        screenshot_img = Image.open(buf).convert("L")
-
-        # Step 3: Resize screenshot to 224x224
-        screenshot_resized = screenshot_img.resize(out_size, Image.Resampling.LANCZOS)
-        screenshot_resized.save(out_path_auto)
-
-        print(f"Saved resized 'screenshot' aspect='auto' Bmode to {out_path_auto}")
